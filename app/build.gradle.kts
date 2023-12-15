@@ -63,7 +63,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation(platform("androidx.compose:compose-bom:2023.08.00"))
     implementation("io.coil-kt:coil-compose:2.5.0")
-
+    implementation("androidx.navigation:navigation-compose:2.5.3")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

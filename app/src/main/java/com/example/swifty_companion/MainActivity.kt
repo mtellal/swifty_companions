@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -43,12 +44,21 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavArgument
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import coil.compose.AsyncImage
 import com.example.swifty_companion.ui.theme.Swifty_companionTheme
 import kotlinx.coroutines.Dispatchers
@@ -61,13 +71,29 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            Home()
+            val navhost = rememberNavController()
+            NavHost(navController = navhost, startDestination = "search") {
+                composable("search") {
+                    Home(navhost)
+                }
+                composable(
+                    "user/{login}",
+                    arguments = listOf(
+                        navArgument(name = "login") {
+                            type = NavType.StringType
+                            nullable = false
+                        }
+                    )
+                    ) {
+                        Text(text = "Hello ${it.arguments?.getString("login")}")
+                }
+            }
         }
     }
 }
 
 @Composable
-fun Home() {
+fun Home(navhost: NavHostController) {
     val auth by remember { mutableStateOf<Auth>(Auth()) }
     var usersList by remember {
         mutableStateOf<List<UserInfo>?>(
@@ -88,8 +114,7 @@ fun Home() {
                             micro = "https://cdn.intra.42.fr/users/e33d1e10403e3a28df8c68980c39d915/micro_efarinha.jpg"
                         )
                     )
-                ),
-                UserInfo(
+                ), UserInfo(
                     login = "efarinha",
                     first_name = "Eduardo",
                     last_name = "Farinha",
@@ -124,19 +149,15 @@ fun Home() {
         modifier = Modifier
             .fillMaxSize()
             .padding(20.dp)
-    )
-    {
-        SearchBar(
-            textField,
-            onChangeValue = { v -> textField = v },
-            findPeer = {
-                coroutine.launch {
-                    withContext(Dispatchers.IO) {
-                        usersList = auth.findPeerRequest(textField)
-                        println("UserList => $usersList")
-                    }
+    ) {
+        SearchBar(textField, onChangeValue = { v -> textField = v }, findPeer = {
+            coroutine.launch {
+                withContext(Dispatchers.IO) {
+                    usersList = auth.findPeerRequest(textField)
+                    println("UserList => $usersList")
                 }
-            })
+            }
+        })
 
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -144,105 +165,20 @@ fun Home() {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 20.dp)
-        )
-        {
+        ) {
             if (usersList != null) {
                 items(usersList!!) {
-                    UserSearchInfo(it)
+                    UserSearchInfo(it, navhost)
                 }
             }
         }
     }
 }
 
-@Composable
-fun SearchBar(
-    textField: String,
-    onChangeValue: (s: String) -> Unit,
-    findPeer: () -> Unit
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxHeight(0.1f)
-            .fillMaxWidth()
-    )
-    {
-        TextField(
-            modifier = Modifier
-                .padding(10.dp)
-                .fillMaxWidth(0.7f),
-            value = textField,
-            singleLine = true,
-            onValueChange = onChangeValue
-        )
-        Button(
-            onClick = {
-                findPeer()
-            }
-        ) {
-            Text(text = "Search")
-        }
-    }
-}
-
-@Composable
-fun UserSearchInfo(user: UserInfo) {
-    println("small url image => ${user.image.versions.small}")
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(80.dp)
-            .shadow(elevation = 3.dp, RoundedCornerShape(10.dp))
-            .background(Color.White)
-            .padding(10.dp)
-            .clickable {
-                println("clicked ")
-            }
-    )
-    {
-        Box(
-            modifier = Modifier
-                .width(50.dp)
-                .height(50.dp)
-                .clip(RoundedCornerShape(50.dp))
-        ) {
-            AsyncImage(
-                model = user.image.versions.small,
-                contentDescription = null,
-                modifier = Modifier
-                    .height(50.dp)
-            )
-        }
-        Text(
-            text = user.login,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(start = 10.dp)
-        )
-        Row(
-            horizontalArrangement = Arrangement.End,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp, end = 10.dp)
-        )
-        {
-            Column(
-                modifier = Modifier.fillMaxHeight(),
-                verticalArrangement = Arrangement.SpaceAround
-            )
-            {
-                Text(text = user.first_name)
-                Text(text = user.last_name)
-            }
-        }
-    }
-}
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    Home()
+    //Home()
 }
 
