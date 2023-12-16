@@ -1,10 +1,9 @@
-package com.example.swifty_companion
+package com.example.swifty_companion.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,9 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.example.swifty_companion.components.ProfilePicture
+import com.example.swifty_companion.models.UserSearchModel
 
 @Composable
-fun UserSearchInfo(user: UserInfo, navhost: NavHostController) {
+fun UserSearchInfo(user: UserSearchModel, navhost: NavHostController) {
     println("small url image => ${user.image.versions.small}")
     Row(verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -41,26 +43,7 @@ fun UserSearchInfo(user: UserInfo, navhost: NavHostController) {
                 navhost.navigate("user/" + user.login)
                 println("clicked ")
             }) {
-        Box(
-            modifier = Modifier
-                .width(50.dp)
-                .height(50.dp)
-                .clip(RoundedCornerShape(50.dp))
-        ) {
-            if (user.image.versions.small != null) {
-                AsyncImage(
-                    model = user.image.versions.small,
-                    contentDescription = null,
-                    modifier = Modifier.height(50.dp)
-                )
-            } else {
-                Image(
-                    painter = painterResource(id = R.drawable.defaultuser),
-                    contentDescription = "default profile picture",
-                    modifier = Modifier.height(50.dp)
-                )
-            }
-        }
+        ProfilePicture(user.image.versions.small)
         Text(
             text = user.login,
             fontSize = 20.sp,

@@ -1,4 +1,4 @@
-package com.example.swifty_companion
+package com.example.swifty_companion.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -25,7 +25,9 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SearchBar(
-    textField: String, onChangeValue: (s: String) -> Unit, findPeer: () -> Unit
+    textField: String,
+    onChangeValue: (s: String) -> Unit,
+    findPeer: () -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,

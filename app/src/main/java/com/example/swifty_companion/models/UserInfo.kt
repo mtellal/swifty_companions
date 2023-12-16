@@ -1,4 +1,4 @@
-package com.example.swifty_companion
+package com.example.swifty_companion.models
 
 data class Versions (
     val large: String,
@@ -12,7 +12,7 @@ data class UserImage(
     val versions: Versions
 )
 
-data class UserInfo(
+data class UserSearchModel(
     val login: String,
     val first_name: String,
     val last_name: String,
