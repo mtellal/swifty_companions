@@ -13,11 +13,9 @@ data class UserImage(
 )
 
 data class UserSearchModel(
+    val id: Int,
     val login: String,
     val first_name: String,
     val last_name: String,
-    val email: String,
-    val url: String,
-    val displayName: String,
-    val image: UserImage
+    val image: UserImage,
 )

@@ -32,18 +32,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun SearchScreen(navhost: NavHostController) {
-    val auth by remember { mutableStateOf<Auth>(Auth()) }
+fun SearchScreen(navhost: NavHostController, auth: Auth) {
     var usersList by remember {
         mutableStateOf<List<UserSearchModel>?>(
             listOf(
                 UserSearchModel(
+                    id = 74705,
                     login = "efarinha",
                     first_name = "Eduardo",
                     last_name = "Farinha",
-                    email = "efarinha@student.42luxembourg.lu",
-                    url = "https://api.intra.42.fr/v2/users/efarinha",
-                    displayName = "null",
                     image = UserImage(
                         link = "https://cdn.intra.42.fr/users/8f5c7ca149f99ed9b6f12b2fe1c7cf52/efarinha.jpg",
                         versions = Versions(
@@ -54,12 +51,10 @@ fun SearchScreen(navhost: NavHostController) {
                         )
                     )
                 ), UserSearchModel(
+                    id = 74705,
                     login = "efarinha",
                     first_name = "Eduardo",
                     last_name = "Farinha",
-                    email = "efarinha@student.42luxembourg.lu",
-                    url = "https://api.intra.42.fr/v2/users/efarinha",
-                    displayName = "null",
                     image = UserImage(
                         link = "https://cdn.intra.42.fr/users/8f5c7ca149f99ed9b6f12b2fe1c7cf52/efarinha.jpg",
                         versions = Versions(

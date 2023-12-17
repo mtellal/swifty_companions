@@ -1,5 +1,6 @@
 package com.example.swifty_companion.utils
 
+import com.example.swifty_companion.models.UserDataModel
 import com.example.swifty_companion.models.UserSearchModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -54,7 +55,6 @@ class Auth {
         var url: String = "https://api.intra.42.fr/v2/users"
         if (login != null)
             url += "?range[login]=" + login.lowercase() + "," + login.lowercase() + "z"
-        println("request with url => $url")
         val request = Request.Builder()
             .url(url)
             .header("Authorization", "Bearer ${token?.access_token}")
@@ -62,15 +62,37 @@ class Auth {
         try {
             client.newCall(request).execute().use {
                 if (!it.isSuccessful) throw IOException("Unexpected error $it")
-                println("Users data fetched")
                 val itemType = object : TypeToken<List<UserSearchModel>>() {}.type
                 users = Gson().fromJson<List<UserSearchModel>>(it.body!!.string(), itemType)
-                println("Users fetched")
             }
         }
         catch (e: Exception) {
             println("Error findPeerRequest $e")
         }
         return users
+    }
+
+    suspend fun userDataRequest(userId: Int?): UserDataModel? {
+        var url: String = "https://api.intra.42.fr/v2/users/$userId"
+        var user : UserDataModel? = null
+        if (userId == null) println("Invalid userId")
+        val request = Request.Builder()
+            .url(url)
+            .header("Authorization", "Bearer ${token?.access_token}")
+            .build()
+
+        try {
+            client.newCall(request).execute().use {
+                if (!it.isSuccessful) throw IOException("user/$userId call failed")
+                println("User $userId data fetched ")
+                val itemType = object : TypeToken<UserDataModel>() {}.type
+                user = Gson().fromJson(it.body!!.string(), itemType)
+            }
+        }
+        catch (e: Exception) {
+            println("User $userId data call failed with =>")
+            println("$e")
+        }
+        return user
     }
 }
