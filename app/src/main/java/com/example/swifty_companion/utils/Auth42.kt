@@ -25,7 +25,7 @@ class Auth {
     var token: TokenResponse? = null
     private val client = OkHttpClient()
 
-    suspend fun httpRequest():String? {
+    suspend fun httpRequest(): String? {
 
         val formBody = FormBody.Builder()
             .add("grant_type", grant_type)
@@ -51,7 +51,7 @@ class Auth {
     }
 
     suspend fun findPeerRequest(login: String?): List<UserSearchModel>? {
-        var users : List<UserSearchModel>? = null
+        var users: List<UserSearchModel>? = null
         var url: String = "https://api.intra.42.fr/v2/users"
         if (login != null)
             url += "?range[login]=" + login.lowercase() + "," + login.lowercase() + "z"
@@ -65,8 +65,7 @@ class Auth {
                 val itemType = object : TypeToken<List<UserSearchModel>>() {}.type
                 users = Gson().fromJson<List<UserSearchModel>>(it.body!!.string(), itemType)
             }
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             println("Error findPeerRequest $e")
         }
         return users
@@ -74,7 +73,7 @@ class Auth {
 
     suspend fun userDataRequest(userId: Int?): UserDataModel? {
         var url: String = "https://api.intra.42.fr/v2/users/$userId"
-        var user : UserDataModel? = null
+        var user: UserDataModel? = null
         if (userId == null) println("Invalid userId")
         val request = Request.Builder()
             .url(url)
@@ -88,8 +87,7 @@ class Auth {
                 val itemType = object : TypeToken<UserDataModel>() {}.type
                 user = Gson().fromJson(it.body!!.string(), itemType)
             }
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             println("User $userId data call failed with =>")
             println("$e")
         }

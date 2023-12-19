@@ -22,7 +22,8 @@ data class ProjectData(
     val id: Int,
     val final_mark: Int?,
     val status: String,
-    val project: Project
+    val project: Project,
+    val cursus_ids: Array<Int>
 )
 
 data class UserDataModel(

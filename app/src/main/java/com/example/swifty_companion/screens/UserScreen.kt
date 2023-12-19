@@ -22,6 +22,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
@@ -49,13 +51,14 @@ import com.example.swifty_companion.components.Header
 import com.example.swifty_companion.components.ProfilePicture
 import com.example.swifty_companion.models.UserDataModel
 import com.example.swifty_companion.utils.Auth
+import com.example.swifty_companion.utils.Colors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
 fun Project(
     name: String,
-    score: Int
+    score: Int?
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -64,13 +67,30 @@ fun Project(
             .padding(10.dp)
     ) {
         Text(text = name, fontSize = 15.sp)
-        Text(text = score.toString())
+        Row {
+            if (score != null && score > 0) {
+                Icon(
+                    imageVector = Icons.Default.Done,
+                    contentDescription = "check mark",
+                    tint = Colors.green_primary
+                )
+                Text(text = score.toString(), color = Colors.green_primary)
+            }
+            else {
+                Icon(
+                    imageVector = Icons.Default.Clear,
+                    contentDescription = "check mark",
+                    tint = Color.Red
+                )
+                Text(text = score.toString(), color = Color.Red)
+            }
+        }
     }
 }
 
 
 @Composable
-fun Projects() {
+fun Projects(user: UserDataModel?) {
     Column {
         Text(text = "Projects", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
         Spacer(modifier = Modifier.height(10.dp))
@@ -81,11 +101,18 @@ fun Projects() {
             Column(
                 modifier = Modifier.padding(10.dp)
             ) {
-                Project("Cub3d", 110)
-                Project("ft_transcendance", 100)
-                Project("exam 01", 100)
-                Project("minishell", 90)
-                Project("so_long", 100)
+                if (user != null && user.projects_users.isNotEmpty()) {
+                    user.projects_users.forEach {
+                        if (it.final_mark != null &&
+                            it.cursus_ids.isNotEmpty() &&
+                            it.cursus_ids[0] == 21
+                        ) {
+                            Project(it.project.name, it.final_mark)
+                        }
+                    }
+                } else {
+                    Text(text = "No projects found")
+                }
             }
         }
     }
@@ -98,7 +125,7 @@ fun UserScreen(
     userId: Int?,
 ) {
     val scrollState = rememberScrollState()
-    var user : UserDataModel? by remember { mutableStateOf<UserDataModel?>(null) }
+    var user: UserDataModel? by remember { mutableStateOf<UserDataModel?>(null) }
 
     LaunchedEffect(true) {
         withContext(Dispatchers.IO) {
@@ -117,7 +144,7 @@ fun UserScreen(
         Column(
             modifier = Modifier.padding(20.dp)
         ) {
-            Projects()
+            Projects(user)
         }
     }
 }

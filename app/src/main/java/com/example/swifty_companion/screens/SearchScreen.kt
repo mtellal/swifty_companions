@@ -32,44 +32,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun SearchScreen(navhost: NavHostController, auth: Auth) {
-    var usersList by remember {
-        mutableStateOf<List<UserSearchModel>?>(
-            listOf(
-                UserSearchModel(
-                    id = 74705,
-                    login = "efarinha",
-                    first_name = "Eduardo",
-                    last_name = "Farinha",
-                    image = UserImage(
-                        link = "https://cdn.intra.42.fr/users/8f5c7ca149f99ed9b6f12b2fe1c7cf52/efarinha.jpg",
-                        versions = Versions(
-                            large = "https://cdn.intra.42.fr/users/fd00fd067575c782cb9ddb0e8c59e2ce/large_efarinha.jpg",
-                            medium = "https://cdn.intra.42.fr/users/497a354e670c30153176ed519fa74c8e/medium_efarinha.jpg",
-                            small = "https://cdn.intra.42.fr/users/36548218e5ba33f8ed65a6db7e0405c6/small_efarinha.jpg",
-                            micro = "https://cdn.intra.42.fr/users/e33d1e10403e3a28df8c68980c39d915/micro_efarinha.jpg"
-                        )
-                    )
-                ), UserSearchModel(
-                    id = 74705,
-                    login = "efarinha",
-                    first_name = "Eduardo",
-                    last_name = "Farinha",
-                    image = UserImage(
-                        link = "https://cdn.intra.42.fr/users/8f5c7ca149f99ed9b6f12b2fe1c7cf52/efarinha.jpg",
-                        versions = Versions(
-                            large = "https://cdn.intra.42.fr/users/fd00fd067575c782cb9ddb0e8c59e2ce/large_efarinha.jpg",
-                            medium = "https://cdn.intra.42.fr/users/497a354e670c30153176ed519fa74c8e/medium_efarinha.jpg",
-                            small = "https://cdn.intra.42.fr/users/36548218e5ba33f8ed65a6db7e0405c6/small_efarinha.jpg",
-                            micro = "https://cdn.intra.42.fr/users/e33d1e10403e3a28df8c68980c39d915/micro_efarinha.jpg"
-                        )
-                    )
-                )
-            )
-        )
-    }
+fun SearchScreen(
+    searchLogin: String,
+    setSearchLogin: (s: String) -> Unit,
+    usersSearchLists: List<UserSearchModel>?,
+    searchUsers: () -> Unit,
+    navhost: NavHostController, 
+    auth: Auth) {
+
     val coroutine = rememberCoroutineScope()
-    var textField by remember { mutableStateOf("") }
     var accessToken = remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(true) {
@@ -85,16 +56,10 @@ fun SearchScreen(navhost: NavHostController, auth: Auth) {
             .fillMaxSize()
             .padding(20.dp)
     ) {
-        SearchBar(textField,
-            onChangeValue = { v -> if (v.length < 50) textField = v },
-            findPeer = {
-                coroutine.launch {
-                    withContext(Dispatchers.IO) {
-                        usersList = auth.findPeerRequest(textField)
-                        println("UserList => $usersList")
-                    }
-                }
-            })
+        SearchBar(searchLogin,
+            onChangeValue = { v -> if (v.length < 50) setSearchLogin(v) },
+            findPeer = searchUsers
+        )
 
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -103,8 +68,8 @@ fun SearchScreen(navhost: NavHostController, auth: Auth) {
                 .fillMaxSize()
                 .padding(top = 20.dp)
         ) {
-            if (usersList != null) {
-                if (usersList!!.isEmpty()) {
+            if (usersSearchLists != null) {
+                if (usersSearchLists!!.isEmpty()) {
                     item() {
                         Row (
                             horizontalArrangement = Arrangement.Center,
@@ -118,7 +83,7 @@ fun SearchScreen(navhost: NavHostController, auth: Auth) {
                         }
                     }
                 }
-                items(usersList!!) {
+                items(usersSearchLists!!) {
                     UserSearchInfo(it, navhost)
                 }
             }

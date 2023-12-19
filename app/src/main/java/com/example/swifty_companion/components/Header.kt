@@ -40,9 +40,11 @@ fun UserLevelBar(
 ) {
     var level : String? = null
     var percent: String? = null
+    var percentFloat: Float = 0f
     if (user != null && user.cursus_users.size > 1) {
         level = user.cursus_users[1].level.toInt().toString()
         percent = ((user.cursus_users[1].level - user.cursus_users[1].level.toInt()) * 100).toInt().toString()
+        percentFloat = percent.toFloat() / 100
     }
 
     Box(
@@ -66,7 +68,7 @@ fun UserLevelBar(
                     color = Colors.green_primary,
                     modifier = Modifier
                         .fillMaxHeight()
-                        .fillMaxWidth(0.2f)
+                        .fillMaxWidth(percentFloat)
                 ) {
                 }
                 Text(
@@ -177,7 +179,7 @@ fun Header(
                     ) {
                         Text(text = "Grade", color = Colors.green_primary)
                         Text(
-                            text = if (user != null && user.cursus_users.size > 1) user.cursus_users[1].grade else "",
+                            text = if (user != null && user.cursus_users.size > 1 && user.cursus_users[1].grade != null) user.cursus_users[1].grade else "",
                             color = Color.White
                         )
                     }
