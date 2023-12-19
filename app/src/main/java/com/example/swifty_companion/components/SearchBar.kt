@@ -2,9 +2,13 @@ package com.example.swifty_companion.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -40,7 +44,6 @@ fun SearchBar(
                     Text(text = "Find a peer")
             },
             modifier = Modifier
-                .padding(10.dp)
                 .fillMaxWidth(0.7f),
             value = textField,
             singleLine = true,
@@ -52,6 +55,7 @@ fun SearchBar(
                 )
             },
         )
+        Spacer(modifier = Modifier.width(10.dp))
         Button(
             modifier = Modifier.padding(top = 5.dp),
             shape = RoundedCornerShape(5.dp),

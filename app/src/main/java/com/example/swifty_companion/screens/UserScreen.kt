@@ -49,74 +49,13 @@ import androidx.navigation.NavHostController
 import com.example.swifty_companion.R
 import com.example.swifty_companion.components.Header
 import com.example.swifty_companion.components.ProfilePicture
+import com.example.swifty_companion.components.Projects
+import com.example.swifty_companion.components.Skills
 import com.example.swifty_companion.models.UserDataModel
 import com.example.swifty_companion.utils.Auth
 import com.example.swifty_companion.utils.Colors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-
-@Composable
-fun Project(
-    name: String,
-    score: Int?
-) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp)
-    ) {
-        Text(text = name, fontSize = 15.sp)
-        Row {
-            if (score != null && score > 0) {
-                Icon(
-                    imageVector = Icons.Default.Done,
-                    contentDescription = "check mark",
-                    tint = Colors.green_primary
-                )
-                Text(text = score.toString(), color = Colors.green_primary)
-            }
-            else {
-                Icon(
-                    imageVector = Icons.Default.Clear,
-                    contentDescription = "check mark",
-                    tint = Color.Red
-                )
-                Text(text = score.toString(), color = Color.Red)
-            }
-        }
-    }
-}
-
-
-@Composable
-fun Projects(user: UserDataModel?) {
-    Column {
-        Text(text = "Projects", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-        Spacer(modifier = Modifier.height(10.dp))
-        Surface(
-            modifier = Modifier
-                .shadow(elevation = 4.dp, RoundedCornerShape(10.dp))
-        ) {
-            Column(
-                modifier = Modifier.padding(10.dp)
-            ) {
-                if (user != null && user.projects_users.isNotEmpty()) {
-                    user.projects_users.forEach {
-                        if (it.final_mark != null &&
-                            it.cursus_ids.isNotEmpty() &&
-                            it.cursus_ids[0] == 21
-                        ) {
-                            Project(it.project.name, it.final_mark)
-                        }
-                    }
-                } else {
-                    Text(text = "No projects found")
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun UserScreen(
@@ -145,6 +84,8 @@ fun UserScreen(
             modifier = Modifier.padding(20.dp)
         ) {
             Projects(user)
+            Spacer(modifier = Modifier.height(20.dp))
+            Skills(user = user)
         }
     }
 }
