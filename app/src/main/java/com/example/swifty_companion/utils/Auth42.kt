@@ -1,5 +1,6 @@
 package com.example.swifty_companion.utils
 
+import com.example.swifty_companion.BuildConfig
 import com.example.swifty_companion.models.UserDataModel
 import com.example.swifty_companion.models.UserSearchModel
 import com.google.gson.Gson
@@ -18,8 +19,8 @@ data class TokenResponse(
 class Auth {
 
     private val authURL = "https://api.intra.42.fr/oauth/token"
-    private val client_id = ""
-    private val client_secret = ""
+    private val client_id = BuildConfig.CLIENT_UID;
+    private val client_secret = BuildConfig.CLIENT_SECRET;
     private val grant_type = "client_credentials"
 
     var token: TokenResponse? = null

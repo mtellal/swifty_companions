@@ -1,3 +1,10 @@
+import java.io.FileInputStream
+import java.util.Properties
+
+var localPropertiesFile = rootProject.file("local.properties")
+var localProperties = Properties()
+localProperties.load(FileInputStream(localPropertiesFile))
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -13,6 +20,9 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+        buildConfigField("String", "CLIENT_UID", localProperties.getProperty("client_uid") )
+        buildConfigField("String", "CLIENT_SECRET", localProperties.getProperty("client_secret"))
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -38,6 +48,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -64,6 +75,8 @@ dependencies {
     implementation(platform("androidx.compose:compose-bom:2023.08.00"))
     implementation("io.coil-kt:coil-compose:2.5.0")
     implementation("androidx.navigation:navigation-compose:2.5.3")
+    implementation("androidx.core:core-splashscreen:1.0.0")
+
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
