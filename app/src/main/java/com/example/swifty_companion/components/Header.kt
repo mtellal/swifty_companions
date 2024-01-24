@@ -20,6 +20,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,7 +31,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.example.swifty_companion.R
+import com.example.swifty_companion.models.CoalitionModel
 import com.example.swifty_companion.models.UserDataModel
 import com.example.swifty_companion.utils.Colors
 
@@ -89,19 +92,32 @@ fun UserLevelBar(
 @Composable
 fun Header(
     navhost: NavHostController,
-    user: UserDataModel?
+    user: UserDataModel?,
+    coalition: Array<CoalitionModel>?
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.alliance_background),
-            contentDescription = "Colation image",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .height(250.dp)
-        )
+        if (coalition != null && coalition.size >= 1 && coalition[1].image_url.isNotEmpty()) {
+            AsyncImage(
+                model = coalition[1].image_url,
+                contentDescription = "Coalition image",
+                modifier = Modifier
+                    .height(250.dp)
+                    .fillMaxWidth()
+            )
+        }
+        else {
+            Image(
+                painter = painterResource(id = R.drawable.alliance_background),
+                contentDescription = "Colation image",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .height(250.dp)
+            )
+        }
+
         IconButton(
             onClick = {
                 navhost.navigate("searchScreen")

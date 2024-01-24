@@ -1,6 +1,7 @@
 package com.example.swifty_companion.utils
 
 import com.example.swifty_companion.BuildConfig
+import com.example.swifty_companion.models.CoalitionModel
 import com.example.swifty_companion.models.UserDataModel
 import com.example.swifty_companion.models.UserSearchModel
 import com.google.gson.Gson
@@ -93,5 +94,29 @@ class Auth {
             println("$e")
         }
         return user
+    }
+
+    fun userCoalition(userId: Int?): Array<CoalitionModel>? {
+        var url: String = "https://api.intra.42.fr/v2/users/${userId}/coalitions"
+        var coalition: Array<CoalitionModel>? = null
+        if (userId == null) println("Invalid userId")
+        val request = Request.Builder()
+            .url(url)
+            .header("Authorization", "Bearer ${token?.access_token}")
+            .build()
+
+        try {
+            client.newCall(request).execute().use {
+                if (!it.isSuccessful) throw IOException("coalition/$userId call failed")
+                val itemType = object : TypeToken<Array<CoalitionModel>?>() {}.type
+                coalition = Gson().fromJson(it.body!!.string(), itemType)
+            }
+        } catch (e: Exception) {
+            println("Coalition $userId data call failed with =>")
+            println("$e")
+        }
+        println("COALITION FROM GSON => $coalition\n ${
+            if (coalition != null && coalition!!.size >= 1) coalition!![1] else "RIEN"}")
+        return coalition
     }
 }

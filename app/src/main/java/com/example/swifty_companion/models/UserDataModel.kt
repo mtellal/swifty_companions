@@ -1,4 +1,5 @@
 package com.example.swifty_companion.models
+import com.google.gson.annotations.SerializedName
 
 data class Skill(
     val id: Int,
@@ -16,12 +17,14 @@ data class UserCursus(
 )
 
 data class Project(
-    val name: String
+    val name: String,
+    val score: Int?
 )
 data class ProjectData(
     val id: Int,
     val final_mark: Int?,
     val status: String,
+    @SerializedName("validated?") val validated: Boolean?,
     val project: Project,
     val cursus_ids: Array<Int>
 )

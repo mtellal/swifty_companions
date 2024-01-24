@@ -51,6 +51,7 @@ import com.example.swifty_companion.components.Header
 import com.example.swifty_companion.components.ProfilePicture
 import com.example.swifty_companion.components.Projects
 import com.example.swifty_companion.components.Skills
+import com.example.swifty_companion.models.CoalitionModel
 import com.example.swifty_companion.models.UserDataModel
 import com.example.swifty_companion.utils.Auth
 import com.example.swifty_companion.utils.Colors
@@ -65,11 +66,12 @@ fun UserScreen(
 ) {
     val scrollState = rememberScrollState()
     var user: UserDataModel? by remember { mutableStateOf<UserDataModel?>(null) }
+    var coalition: Array<CoalitionModel>? by remember { mutableStateOf<Array<CoalitionModel>?>(null) }
 
     LaunchedEffect(true) {
         withContext(Dispatchers.IO) {
                 user = auth.userDataRequest(userId)
-                println("user set $user")
+                coalition = auth.userCoalition(userId)
             }
     }
 
@@ -79,13 +81,13 @@ fun UserScreen(
             .verticalScroll(scrollState)
     )
     {
-        Header(navHostController, user)
+        Header(navHostController, user, coalition)
         Column(
             modifier = Modifier.padding(20.dp)
         ) {
             Projects(user)
             Spacer(modifier = Modifier.height(20.dp))
-            //Skills(user = user)
+            Skills(user = user)
         }
     }
 }

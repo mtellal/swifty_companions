@@ -1,5 +1,6 @@
 package com.example.swifty_companion.components
 
+import android.widget.ScrollView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,10 +13,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -29,17 +34,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.swifty_companion.R
 import com.example.swifty_companion.models.ProjectData
 import com.example.swifty_companion.models.UserDataModel
 import com.example.swifty_companion.utils.Colors
 
 @Composable
 fun Project(
-    name: String,
-    score: Int?
+    project: ProjectData
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -47,22 +54,37 @@ fun Project(
             .fillMaxWidth()
             .padding(10.dp)
     ) {
-        Text(text = name, fontSize = 15.sp)
+        Text(text = project.project.name, fontSize = 15.sp)
         Row {
-            if (score != null && score > 0) {
+            if (project.status == "in_progress") {
+                Icon(
+                    painter = painterResource(id = R.drawable.time),
+                    contentDescription = "check mark",
+                    tint = Colors.orange,
+                    modifier = Modifier
+                        .height(25.dp)
+                        .width(25.dp)
+                )
+            }
+            else if (project.status == "finished" && project.validated != null && project.validated) {
+                Text(text = project.final_mark.toString(), color = Colors.green_primary)
+                Spacer(modifier = Modifier.width(10.dp))
                 Icon(
                     imageVector = Icons.Default.Done,
                     contentDescription = "check mark",
                     tint = Colors.green_primary
                 )
-                Text(text = score.toString(), color = Colors.green_primary)
             } else {
+                if (project.final_mark != null)
+                Text(text = project.final_mark.toString() , color = Color.Red)
+                else
+                    Text(text = "0", color = Color.Red)
+                Spacer(modifier = Modifier.width(10.dp))
                 Icon(
                     imageVector = Icons.Default.Clear,
                     contentDescription = "check mark",
                     tint = Color.Red
                 )
-                Text(text = score.toString(), color = Color.Red)
             }
         }
     }
@@ -71,19 +93,12 @@ fun Project(
 
 @Composable
 fun Projects(user: UserDataModel?) {
-    var expand by remember { mutableStateOf(false) }
     var projects: List<ProjectData>? by remember {
         mutableStateOf<List<ProjectData>?>(null)
     }
 
-    println("PROJECTS USERS EMPTY ${user?.projects_users}")
     if (user != null && user.projects_users.isNotEmpty()) {
-        println("PROJECTS USERS NOT EMPTY ??? ${user.projects_users.size}")
-        if (!expand) {
-            projects = user.projects_users.slice(IntRange(0, minOf(5, user.projects_users.size - 1)))
-        } else {
-            projects = user.projects_users.toList()
-        }
+            projects = user.projects_users.slice(IntRange(0, user.projects_users.size - 1))
     }
 
     Column {
@@ -93,28 +108,29 @@ fun Projects(user: UserDataModel?) {
             color = Color.White,
             modifier = Modifier
                 .shadow(elevation = 4.dp, RoundedCornerShape(10.dp))
-                .clickable { expand = !expand }
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(10.dp)
-                    .height(40.dp)
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                if (projects != null && projects!!.isNotEmpty()) {
+            if (projects != null && projects!!.isNotEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .height(minOf(projects!!.size * 50, 250).toInt().dp)
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
                     projects!!.forEach {
-                        if (it.final_mark != null &&
-                            it.cursus_ids.isNotEmpty() &&
-                            it.cursus_ids[0] == 21
-                        ) {
-                            print("PROJETS FOUND => $it")
-                            Project(it.project.name, it.final_mark)
-                        }
+                        Project(it)
                     }
-                } else {
-                    println("projects data -> $projects")
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .height(50.dp)
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
                     Text(text = "No projects found")
                 }
             }

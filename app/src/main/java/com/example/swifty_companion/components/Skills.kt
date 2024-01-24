@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Done
@@ -23,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -52,36 +55,45 @@ fun Skill(
 
 @Composable
 fun Skills(user: UserDataModel?) {
-    var expand by remember { mutableStateOf(false) }
     var skills: List<Skill>? by remember {
         mutableStateOf<List<Skill>?>(null)
     }
     if (user != null && user.cursus_users.size > 1 && user.cursus_users[1].skills.isNotEmpty()) {
-        if (!expand) {
-            skills = user.cursus_users[1].skills.slice(IntRange(0, 5))
-        } else {
-            skills = user.cursus_users[1].skills.toList()
-        }
+            skills = user.cursus_users[1].skills.slice(IntRange(0, user.cursus_users[1].skills.size - 1))
     }
 
     Column {
         Text(text = "Skills", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
         Spacer(modifier = Modifier.height(10.dp))
         Surface(
+            color = Color.White,
             modifier = Modifier
                 .shadow(elevation = 4.dp, RoundedCornerShape(10.dp))
-                .clickable { expand = !expand }
         ) {
-            Column(
-                modifier = Modifier.padding(10.dp)
-            ) {
-                if (skills != null && skills!!.isNotEmpty()) {
+            if (skills != null && skills!!.isNotEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .height(minOf(skills!!.size * 50, 250).toInt().dp)
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
                     skills!!.forEach {
                         Skill(it.name, it.level)
                     }
-                } else {
-                    println("skills data -> $skills")
-                    Text(text = "No projects found")
+                }
+            }
+            else {
+                Column(
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .height(50.dp)
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(text = "No skills found")
                 }
             }
         }
