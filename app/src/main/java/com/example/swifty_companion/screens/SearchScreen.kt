@@ -57,8 +57,8 @@ fun SearchScreen(
             .padding(20.dp)
     ) {
         SearchBar(searchLogin,
-            onChangeValue = { v -> if (v.length < 50) setSearchLogin(v) },
-            findPeer = searchUsers
+            onChangeValue = { v -> if (v.length < 25) setSearchLogin(v.filter { it.isLetter() }) },
+            searchUsers = searchUsers
         )
 
         LazyColumn(

@@ -1,5 +1,6 @@
 package com.example.swifty_companion.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -23,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -72,23 +75,33 @@ fun Projects(user: UserDataModel?) {
     var projects: List<ProjectData>? by remember {
         mutableStateOf<List<ProjectData>?>(null)
     }
+
+    println("PROJECTS USERS EMPTY ${user?.projects_users}")
     if (user != null && user.projects_users.isNotEmpty()) {
+        println("PROJECTS USERS NOT EMPTY ??? ${user.projects_users.size}")
         if (!expand) {
-            projects = user.projects_users.slice(IntRange(0, 5))
+            projects = user.projects_users.slice(IntRange(0, minOf(5, user.projects_users.size - 1)))
         } else {
             projects = user.projects_users.toList()
         }
     }
+
     Column {
         Text(text = "Projects", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
         Spacer(modifier = Modifier.height(10.dp))
         Surface(
+            color = Color.White,
             modifier = Modifier
                 .shadow(elevation = 4.dp, RoundedCornerShape(10.dp))
                 .clickable { expand = !expand }
         ) {
             Column(
-                modifier = Modifier.padding(10.dp)
+                modifier = Modifier
+                    .padding(10.dp)
+                    .height(40.dp)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (projects != null && projects!!.isNotEmpty()) {
                     projects!!.forEach {
@@ -96,6 +109,7 @@ fun Projects(user: UserDataModel?) {
                             it.cursus_ids.isNotEmpty() &&
                             it.cursus_ids[0] == 21
                         ) {
+                            print("PROJETS FOUND => $it")
                             Project(it.project.name, it.final_mark)
                         }
                     }

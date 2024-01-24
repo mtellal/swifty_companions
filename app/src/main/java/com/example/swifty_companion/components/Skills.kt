@@ -63,6 +63,7 @@ fun Skills(user: UserDataModel?) {
             skills = user.cursus_users[1].skills.toList()
         }
     }
+
     Column {
         Text(text = "Skills", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
         Spacer(modifier = Modifier.height(10.dp))
@@ -79,7 +80,7 @@ fun Skills(user: UserDataModel?) {
                         Skill(it.name, it.level)
                     }
                 } else {
-                    println("projects data -> $skills")
+                    println("skills data -> $skills")
                     Text(text = "No projects found")
                 }
             }

@@ -68,9 +68,9 @@ fun UserScreen(
 
     LaunchedEffect(true) {
         withContext(Dispatchers.IO) {
-            user = auth.userDataRequest(userId)
-            println("user set $user")
-        }
+                user = auth.userDataRequest(userId)
+                println("user set $user")
+            }
     }
 
     Column(
@@ -85,7 +85,7 @@ fun UserScreen(
         ) {
             Projects(user)
             Spacer(modifier = Modifier.height(20.dp))
-            Skills(user = user)
+            //Skills(user = user)
         }
     }
 }

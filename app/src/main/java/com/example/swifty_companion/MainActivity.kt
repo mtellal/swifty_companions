@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -32,87 +33,55 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val auth by remember { mutableStateOf<Auth>(Auth()) }
-            val coroutine = rememberCoroutineScope()
-
-            var searchLogin by remember { mutableStateOf("") }
-            var usersSearchLists by remember {
-                mutableStateOf<List<UserSearchModel>?>(
-                    listOf(
-                        UserSearchModel(
-                            id = 74705,
-                            login = "efarinha",
-                            first_name = "Eduardo",
-                            last_name = "Farinha",
-                            image = UserImage(
-                                link = "https://cdn.intra.42.fr/users/8f5c7ca149f99ed9b6f12b2fe1c7cf52/efarinha.jpg",
-                                versions = Versions(
-                                    large = "https://cdn.intra.42.fr/users/fd00fd067575c782cb9ddb0e8c59e2ce/large_efarinha.jpg",
-                                    medium = "https://cdn.intra.42.fr/users/497a354e670c30153176ed519fa74c8e/medium_efarinha.jpg",
-                                    small = "https://cdn.intra.42.fr/users/36548218e5ba33f8ed65a6db7e0405c6/small_efarinha.jpg",
-                                    micro = "https://cdn.intra.42.fr/users/e33d1e10403e3a28df8c68980c39d915/micro_efarinha.jpg"
-                                )
-                            )
-                        ), UserSearchModel(
-                            id = 74705,
-                            login = "efarinha",
-                            first_name = "Eduardo",
-                            last_name = "Farinha",
-                            image = UserImage(
-                                link = "https://cdn.intra.42.fr/users/8f5c7ca149f99ed9b6f12b2fe1c7cf52/efarinha.jpg",
-                                versions = Versions(
-                                    large = "https://cdn.intra.42.fr/users/fd00fd067575c782cb9ddb0e8c59e2ce/large_efarinha.jpg",
-                                    medium = "https://cdn.intra.42.fr/users/497a354e670c30153176ed519fa74c8e/medium_efarinha.jpg",
-                                    small = "https://cdn.intra.42.fr/users/36548218e5ba33f8ed65a6db7e0405c6/small_efarinha.jpg",
-                                    micro = "https://cdn.intra.42.fr/users/e33d1e10403e3a28df8c68980c39d915/micro_efarinha.jpg"
-                                )
-                            )
-                        )
-                    )
-                )
-            }
-
-            val navhost = rememberNavController()
-            NavHost(navController = navhost, startDestination = "searchScreen") {
-                composable("searchScreen") {
-                    SearchScreen(
-                        searchLogin,
-                        setSearchLogin = { searchLogin = it},
-                        usersSearchLists = usersSearchLists,
-                        searchUsers = {
-                            coroutine.launch {
-                                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-                                    usersSearchLists = auth.findPeerRequest(searchLogin)
-                                    kotlin.io.println("UserList => $usersSearchLists")
-                                }
-                            }
-                        },
-                        navhost, auth
-                    )
-                }
-                composable(
-                    "userScreen/{userId}",
-                    arguments = listOf(
-                        navArgument(name = "userId") {
-                            type = NavType.IntType
-                            nullable = false
-                        },
-                    )
-                ) {
-                    UserScreen(
-                        navHostController = navhost,
-                        auth,
-                        userId = it.arguments?.getInt("userId")
-                    )
-                }
-            }
+            AppNavigation()
         }
     }
 }
 
-@Preview(showBackground = true)
+
 @Composable
-fun GreetingPreview() {
-    //Home()
+fun AppNavigation() {
+    val auth by remember { mutableStateOf<Auth>(Auth()) }
+    val coroutine = rememberCoroutineScope()
+
+    var searchLogin by remember { mutableStateOf("") }
+    var usersSearchLists by remember {
+        mutableStateOf<List<UserSearchModel>?>(listOf())
+    }
+
+    val navhost = rememberNavController()
+    NavHost(navController = navhost, startDestination = "searchScreen") {
+        composable("searchScreen") {
+            SearchScreen(
+                searchLogin,
+                setSearchLogin = { searchLogin = it },
+                usersSearchLists = usersSearchLists,
+                searchUsers = {
+                    coroutine.launch {
+                        withContext(Dispatchers.IO) {
+                            usersSearchLists = auth.findPeerRequest(searchLogin)
+                        }
+                    }
+                },
+                navhost, auth
+            )
+        }
+        composable(
+            "userScreen/{userId}",
+            arguments = listOf(
+                navArgument(name = "userId") {
+                    type = NavType.IntType
+                    nullable = false
+                },
+            )
+        ) {
+            UserScreen(
+                navHostController = navhost,
+                auth,
+                userId = it.arguments?.getInt("userId")
+            )
+        }
+    }
 }
+
 
