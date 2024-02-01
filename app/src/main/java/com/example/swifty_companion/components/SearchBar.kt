@@ -1,5 +1,6 @@
 package com.example.swifty_companion.components
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,34 +27,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SearchBar(
+fun SearchBarLandscape(
     textField: String,
     onChangeValue: (s: String) -> Unit,
-    searchUsers: () -> Unit
+    submit: (t: String) -> Unit
 ) {
-    val localFocus = LocalFocusManager.current;
-
-    fun submit(text: String) {
-        if (textField.isNotEmpty()) {
-            searchUsers()
-            localFocus.clearFocus()
-        }
-    }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .fillMaxHeight(0.1f)
+            .fillMaxHeight(0.3f)
             .fillMaxWidth()
     ) {
         OutlinedTextField(
             label = {
-                    Text(text = "Find a peer")
+                Text(text = "Find a peer")
             },
             modifier = Modifier
                 .fillMaxWidth(0.7f),
@@ -81,4 +75,82 @@ fun SearchBar(
             Text(text = "Search", color = Color.Black)
         }
     }
+}
+
+@Composable
+fun SearchBarPortait(
+    textField: String,
+    onChangeValue: (s: String) -> Unit,
+    submit: (t: String) -> Unit
+) {
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxHeight(0.1f)
+            .fillMaxWidth()
+    ) {
+        OutlinedTextField(
+            label = {
+                Text(text = "Find a peer")
+            },
+            modifier = Modifier
+                .fillMaxWidth(0.7f),
+            value = textField,
+            singleLine = true,
+            onValueChange = onChangeValue,
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Email Icon"
+                )
+            },
+            keyboardActions = KeyboardActions(
+                onDone = { submit(textField) }
+            )
+        )
+        Spacer(modifier = Modifier.width(10.dp))
+        OutlinedButton(
+            modifier = Modifier
+                .padding(top = 5.dp),
+            shape = RoundedCornerShape(5.dp),
+            colors = ButtonDefaults.buttonColors(Color.White),
+            onClick = { submit(textField) }
+        ) {
+            Text(text = "Search", color = Color.Black)
+        }
+    }
+}
+
+
+@Composable
+fun SearchBar(
+    textField: String,
+    onChangeValue: (s: String) -> Unit,
+    searchUsers: () -> Unit,
+) {
+    val localFocus = LocalFocusManager.current;
+
+    fun submit(text: String): Unit {
+        if (textField.isNotEmpty()) {
+            searchUsers()
+            localFocus.clearFocus()
+        }
+    }
+
+    if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        SearchBarLandscape(
+            textField = textField,
+            onChangeValue = onChangeValue,
+            submit = { t -> submit(t) },
+        )
+    } else {
+        SearchBarPortait(
+            textField = textField,
+            onChangeValue = onChangeValue,
+            submit = { t -> submit(t) },
+        )
+    }
+
+
 }

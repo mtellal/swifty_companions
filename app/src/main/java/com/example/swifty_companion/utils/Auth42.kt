@@ -35,19 +35,21 @@ class Auth {
             .add("client_secret", client_secret)
             .build()
 
-        val request = Request.Builder()
-            .url(authURL)
-            .post(formBody)
-            .build()
-
         try {
+            val request = Request.Builder()
+                .url(authURL)
+                .post(formBody)
+                .build()
+
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) throw IOException("Unexpected error $response")
                 this.token = Gson().fromJson(response.body!!.string(), TokenResponse::class.java)
                 println("token from httpRequest ${this.token}")
             }
         } catch (e: Exception) {
-            println("Error: oauthToken request $e")
+//            println("Error: oauthToken request $e")
+            println("return null")
+            return (null)
         }
         return token?.access_token
     }
@@ -57,11 +59,11 @@ class Auth {
         var url: String = "https://api.intra.42.fr/v2/users"
         if (login != null)
             url += "?range[login]=" + login.lowercase() + "," + login.lowercase() + "z"
-        val request = Request.Builder()
-            .url(url)
-            .header("Authorization", "Bearer ${token?.access_token}")
-            .build()
         try {
+            val request = Request.Builder()
+                .url(url)
+                .header("Authorization", "Bearer ${token?.access_token}")
+                .build()
             client.newCall(request).execute().use {
                 if (!it.isSuccessful) throw IOException("Unexpected error $it")
                 val itemType = object : TypeToken<List<UserSearchModel>>() {}.type
@@ -69,6 +71,7 @@ class Auth {
             }
         } catch (e: Exception) {
             println("Error findPeerRequest $e")
+            return (null)
         }
         return users
     }
@@ -77,12 +80,12 @@ class Auth {
         var url: String = "https://api.intra.42.fr/v2/users/$userId"
         var user: UserDataModel? = null
         if (userId == null) println("Invalid userId")
-        val request = Request.Builder()
-            .url(url)
-            .header("Authorization", "Bearer ${token?.access_token}")
-            .build()
-
         try {
+            val request = Request.Builder()
+                .url(url)
+                .header("Authorization", "Bearer ${token?.access_token}")
+                .build()
+
             client.newCall(request).execute().use {
                 if (!it.isSuccessful) throw IOException("user/$userId call failed")
                 println("User $userId data fetched ")
@@ -92,6 +95,7 @@ class Auth {
         } catch (e: Exception) {
             println("User $userId data call failed with =>")
             println("$e")
+            return (null)
         }
         return user
     }
@@ -100,12 +104,12 @@ class Auth {
         var url: String = "https://api.intra.42.fr/v2/users/${userId}/coalitions"
         var coalition: Array<CoalitionModel>? = null
         if (userId == null) println("Invalid userId")
-        val request = Request.Builder()
-            .url(url)
-            .header("Authorization", "Bearer ${token?.access_token}")
-            .build()
-
         try {
+            val request = Request.Builder()
+                .url(url)
+                .header("Authorization", "Bearer ${token?.access_token}")
+                .build()
+
             client.newCall(request).execute().use {
                 if (!it.isSuccessful) throw IOException("coalition/$userId call failed")
                 val itemType = object : TypeToken<Array<CoalitionModel>?>() {}.type
