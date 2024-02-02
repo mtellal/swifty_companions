@@ -1,10 +1,10 @@
 package com.example.swifty_companion.utils
 
 import com.example.swifty_companion.BuildConfig
-import com.example.swifty_companion.models.CoalitionModel
 import com.example.swifty_companion.models.UserDataModel
 import com.example.swifty_companion.models.UserSearchModel
 import com.google.gson.Gson
+import com.google.gson.JsonParseException
 import com.google.gson.reflect.TypeToken
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
@@ -69,9 +69,9 @@ class Auth {
                 val itemType = object : TypeToken<List<UserSearchModel>>() {}.type
                 users = Gson().fromJson<List<UserSearchModel>>(it.body!!.string(), itemType)
             }
-        } catch (e: Exception) {
-            println("Error findPeerRequest $e")
-            return (null)
+        }
+        catch (e: IOException) {
+            println("Error findPeerRequest IOexceptiom $e")
         }
         return users
     }
@@ -92,7 +92,7 @@ class Auth {
                 val itemType = object : TypeToken<UserDataModel>() {}.type
                 user = Gson().fromJson(it.body!!.string(), itemType)
             }
-        } catch (e: Exception) {
+        } catch (e: IOException) {
             println("User $userId data call failed with =>")
             println("$e")
             return (null)
@@ -100,10 +100,9 @@ class Auth {
         return user
     }
 
-    fun userCoalition(userId: Int?): Array<CoalitionModel>? {
-        var url: String = "https://api.intra.42.fr/v2/users/${userId}/coalitions"
+    fun userCoalition(username: String?): Array<CoalitionModel>? {
+        var url: String = "https://api.intra.42.fr/v2/users/${username}/coalitions"
         var coalition: Array<CoalitionModel>? = null
-        if (userId == null) println("Invalid userId")
         try {
             val request = Request.Builder()
                 .url(url)
@@ -111,16 +110,49 @@ class Auth {
                 .build()
 
             client.newCall(request).execute().use {
-                if (!it.isSuccessful) throw IOException("coalition/$userId call failed")
+                if (!it.isSuccessful) throw IOException("coalition/$username call failed")
                 val itemType = object : TypeToken<Array<CoalitionModel>?>() {}.type
+                println("BODY -> ${it.body!!.string()}")
                 coalition = Gson().fromJson(it.body!!.string(), itemType)
+                println("COALITION (GSON) => $coalition")
             }
-        } catch (e: Exception) {
-            println("Coalition $userId data call failed with =>")
+        } catch (e: IOException) {
+            println("Coalition $username data call failed with =>")
             println("$e")
         }
-        println("COALITION FROM GSON => $coalition\n ${
-            if (coalition != null && coalition!!.size >= 1) coalition!![1] else "RIEN"}")
+        catch (e: JsonParseException) {
+            println("JsonParseException thrown $e")
+        }
+        catch (e: Exception) {
+            println("Exception thrown $e")
+        }
         return coalition
+    }
+
+    fun fetchData(uri: String, _object: Object?): Object? {
+        var url: String = "https://api.intra.42.fr/v2/${uri}"
+        var data: Object? = null
+        try {
+            val request = Request.Builder()
+                .url(url)
+                .header("Authorization", "Bearer ${token?.access_token}")
+                .build()
+
+            client.newCall(request).execute().use {
+                if (!it.isSuccessful) throw IOException("${uri} call failed")
+                val itemType = object : TypeToken<Object?>() {}.type
+                data = Gson().fromJson(it.body!!.string(), itemType)
+            }
+        } catch (e: IOException) {
+            println("FetchData data call failed with =>")
+            println("$e")
+        }
+        catch (e: JsonParseException) {
+            println("FetchData JsonParseException thrown $e")
+        }
+        catch (e: Exception) {
+            println("FetchData Exception thrown $e")
+        }
+        return data
     }
 }

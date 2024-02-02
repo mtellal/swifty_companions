@@ -56,13 +56,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
 @Composable
 fun AppNavigation(
     viewModel: AppNavigationViewModel
 ) {
-
-    var coroutine = rememberCoroutineScope()
 
     val navhost = rememberNavController()
 
@@ -70,21 +67,9 @@ fun AppNavigation(
         composable("searchScreen") {
             SearchScreen(
                 viewModel.searchLogin.value,
-                setSearchLogin = { viewModel.searchLogin.value = it },
+                setSearchLogin = { viewModel.setSearchLogin(it) },
                 usersSearchList = viewModel.usersSearchList.value,
-                searchUsers = {
-                    coroutine.launch {
-                        withContext(Dispatchers.IO) {
-                            viewModel.usersSearchList!!.value = viewModel.auth.value.findPeerRequest(viewModel.searchLogin.value)
-                            println("viwmodel USERS SEARCH LIST => ${viewModel.usersSearchList.value}")
-                            if (viewModel.usersSearchList == null || viewModel.usersSearchList.value!!.isEmpty()) {
-                                viewModel.error.value = true;
-                            }
-                            else
-                                viewModel.error.value = false
-                        }
-                    }
-                },
+                searchUsers = { viewModel.searchUsers() },
                 navhost,
                 viewModel.auth.value,
                 viewModel.error.value,

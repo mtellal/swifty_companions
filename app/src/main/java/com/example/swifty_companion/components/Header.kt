@@ -1,7 +1,6 @@
 package com.example.swifty_companion.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -20,7 +18,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,7 +30,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.swifty_companion.R
-import com.example.swifty_companion.models.CoalitionModel
 import com.example.swifty_companion.models.UserDataModel
 import com.example.swifty_companion.utils.Colors
 
@@ -99,9 +95,10 @@ fun Header(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        if (coalition != null && coalition.size >= 1 && coalition[1].image_url.isNotEmpty()) {
+        println("COALITION => ${if (coalition != null && coalition!!.size > 0) coalition!![0] else "COALITION.SIZE === 0"}")
+        if (coalition != null && coalition.size >= 1 && coalition[1].cover_url!!.isNotEmpty()) {
             AsyncImage(
-                model = coalition[1].image_url,
+                model = coalition[1].cover_url,
                 contentDescription = "Coalition image",
                 modifier = Modifier
                     .height(250.dp)

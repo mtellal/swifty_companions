@@ -42,7 +42,7 @@ fun SearchBarLandscape(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .fillMaxHeight(0.3f)
+            .fillMaxHeight(0.2f)
             .fillMaxWidth()
     ) {
         OutlinedTextField(
