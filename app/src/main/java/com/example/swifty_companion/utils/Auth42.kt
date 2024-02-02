@@ -1,6 +1,7 @@
 package com.example.swifty_companion.utils
 
 import com.example.swifty_companion.BuildConfig
+import com.example.swifty_companion.models.CoalitionModel
 import com.example.swifty_companion.models.UserDataModel
 import com.example.swifty_companion.models.UserSearchModel
 import com.google.gson.Gson
@@ -88,7 +89,6 @@ class Auth {
 
             client.newCall(request).execute().use {
                 if (!it.isSuccessful) throw IOException("user/$userId call failed")
-                println("User $userId data fetched ")
                 val itemType = object : TypeToken<UserDataModel>() {}.type
                 user = Gson().fromJson(it.body!!.string(), itemType)
             }
@@ -112,13 +112,10 @@ class Auth {
             client.newCall(request).execute().use {
                 if (!it.isSuccessful) throw IOException("coalition/$username call failed")
                 val itemType = object : TypeToken<Array<CoalitionModel>?>() {}.type
-                println("BODY -> ${it.body!!.string()}")
                 coalition = Gson().fromJson(it.body!!.string(), itemType)
-                println("COALITION (GSON) => $coalition")
             }
         } catch (e: IOException) {
-            println("Coalition $username data call failed with =>")
-            println("$e")
+            println("Coalition $username data call failed with => $e")
         }
         catch (e: JsonParseException) {
             println("JsonParseException thrown $e")
@@ -129,9 +126,10 @@ class Auth {
         return coalition
     }
 
-    fun fetchData(uri: String, _object: Object?): Object? {
-        var url: String = "https://api.intra.42.fr/v2/${uri}"
-        var data: Object? = null
+    fun <A>fetchData(uri: String?): A? {
+        var url: String = "https://api.intra.42.fr/v2${uri}"
+        var data: A? = null
+        if (uri == null) return null
         try {
             val request = Request.Builder()
                 .url(url)
@@ -140,7 +138,7 @@ class Auth {
 
             client.newCall(request).execute().use {
                 if (!it.isSuccessful) throw IOException("${uri} call failed")
-                val itemType = object : TypeToken<Object?>() {}.type
+                val itemType = object : TypeToken<A?>() {}.type
                 data = Gson().fromJson(it.body!!.string(), itemType)
             }
         } catch (e: IOException) {
@@ -153,6 +151,7 @@ class Auth {
         catch (e: Exception) {
             println("FetchData Exception thrown $e")
         }
+        println("return data correctly $data")
         return data
     }
 }

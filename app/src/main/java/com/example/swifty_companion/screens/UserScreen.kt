@@ -19,6 +19,7 @@ import androidx.navigation.NavHostController
 import com.example.swifty_companion.components.Header
 import com.example.swifty_companion.components.Projects
 import com.example.swifty_companion.components.Skills
+import com.example.swifty_companion.models.CoalitionModel
 import com.example.swifty_companion.models.UserDataModel
 import com.example.swifty_companion.utils.Auth
 import kotlinx.coroutines.Dispatchers
@@ -31,14 +32,24 @@ fun UserScreen(
     userId: Int?,
 ) {
     val scrollState = rememberScrollState()
-    var user: UserDataModel? by remember { mutableStateOf<UserDataModel?>(null) }
-    var coalition: Array<CoalitionModel>? by remember { mutableStateOf<Array<CoalitionModel>?>(null) }
+    var user by remember { mutableStateOf<UserDataModel?>(null) }
+    var coalition by remember { mutableStateOf<Array<CoalitionModel>?>(null) }
 
     LaunchedEffect(true) {
         withContext(Dispatchers.IO) {
-                user = auth.userDataRequest(userId)
-                coalition = auth.userCoalition(user?.login)
+            user = auth.userDataRequest(userId)
+            println("USER => $user")
+            if (user != null && user!!.login != null) {
+                println("before coalition")
+                coalition = auth.userCoalition(user!!.login)
+                if (coalition != null && coalition!!.size > 0) {
+                    println("COALITION SIZE ${coalition?.size}")
+                    for (i in coalition!!) {
+                        println(i)
+                    }
+                }
             }
+        }
     }
 
     Column(

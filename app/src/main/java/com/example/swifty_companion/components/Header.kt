@@ -1,6 +1,7 @@
 package com.example.swifty_companion.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -30,12 +32,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.swifty_companion.R
+import com.example.swifty_companion.models.CoalitionModel
 import com.example.swifty_companion.models.UserDataModel
 import com.example.swifty_companion.utils.Colors
 
 @Composable
 fun UserLevelBar(
-    user: UserDataModel?
+    user: UserDataModel?,
+    color: Color
 ) {
     var level : String? = null
     var percent: String? = null
@@ -64,7 +68,7 @@ fun UserLevelBar(
                 modifier = Modifier.fillMaxSize(),
             ) {
                 Surface(
-                    color = Colors.green_primary,
+                    color = color,
                     modifier = Modifier
                         .fillMaxHeight()
                         .fillMaxWidth(percentFloat)
@@ -91,18 +95,28 @@ fun Header(
     user: UserDataModel?,
     coalition: Array<CoalitionModel>?
 ) {
+
+    var _coalition: CoalitionModel? = null;
+    var _color: Color = Color.White
+
+    if (coalition != null && coalition.size > 0) {
+        if (coalition!!.size > 2)
+                _coalition = coalition!![1]
+        else _coalition = coalition!![0]
+        _color = Color(android.graphics.Color.parseColor(_coalition.color))
+        println("Coalition picked => $_coalition")
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        println("COALITION => ${if (coalition != null && coalition!!.size > 0) coalition!![0] else "COALITION.SIZE === 0"}")
-        if (coalition != null && coalition.size >= 1 && coalition[1].cover_url!!.isNotEmpty()) {
+        if (_coalition != null && _coalition!!.cover_url != null && _coalition!!.cover_url!!.isNotEmpty()) {
             AsyncImage(
-                model = coalition[1].cover_url,
+                model = _coalition.cover_url,
                 contentDescription = "Coalition image",
                 modifier = Modifier
-                    .height(250.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(1f)
             )
         }
         else {
@@ -163,7 +177,7 @@ fun Header(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxHeight()
                     ) {
-                        Text(text = "Wallet", color = Colors.green_primary)
+                        Text(text = "Wallet", color = _color)
                         Text(text = user?.wallet.toString(), color = Color.White)
                     }
                     Column(
@@ -171,7 +185,7 @@ fun Header(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxHeight()
                     ) {
-                        Text(text = "Evaluation Points", color = Colors.green_primary)
+                        Text(text = "Evaluation Points", color = _color)
                         Text(text = user?.correction_point.toString(), color = Color.White)
                     }
                     Column(
@@ -179,7 +193,7 @@ fun Header(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxHeight()
                     ) {
-                        Text(text = "Cursus", color = Colors.green_primary)
+                        Text(text = "Cursus", color = _color)
                         Text(
                             text = if (user != null && user.cursus_users.size > 1) user.cursus_users[1].cursus.name else "",
                             color = Color.White
@@ -190,7 +204,7 @@ fun Header(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxHeight()
                     ) {
-                        Text(text = "Grade", color = Colors.green_primary)
+                        Text(text = "Grade", color =_color)
                         Text(
                             text = if (user != null && user.cursus_users.size > 1 && user.cursus_users[1].grade != null) user.cursus_users[1].grade else "",
                             color = Color.White
@@ -198,7 +212,7 @@ fun Header(
                     }
                 }
             }
-            UserLevelBar(user = user)
+            UserLevelBar(user = user,  color = _color)
         }
     }
 }
