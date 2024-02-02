@@ -38,6 +38,7 @@ import com.example.swifty_companion.models.UserImage
 import com.example.swifty_companion.models.UserSearchModel
 import com.example.swifty_companion.models.Versions
 import com.example.swifty_companion.utils.Auth
+import com.example.swifty_companion.viewModels.AppNavigationViewModel
 import com.example.swifty_companion.viewModels.SearchScreenViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -75,150 +76,50 @@ fun showAlert(
 }
 
 
-
-@Composable
-fun SearchScreenHorizontal(
-    searchLogin: String,
-    setSearchLogin: (s: String) -> Unit,
-    usersSearchList: List<UserSearchModel>?,
-    searchUsers: () -> Unit,
-    navhost: NavHostController,
-    error: Boolean,
-    setError: (b: Boolean) -> Unit
-) {
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp)
-    ) {
-        SearchBar(
-            searchLogin,
-            onChangeValue = { v -> if (v.length < 25) setSearchLogin(v.filter { it.isLetter() }) },
-            searchUsers = searchUsers,
-        )
-
-        if (error) {
-            showAlert(
-                title = "Error",
-                message = "User not found",
-                error,
-                setError
-            )
-        } else {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                contentPadding = PaddingValues(5.dp),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 20.dp)
-            ) {
-                if ((usersSearchList?.isEmpty() == false)) {
-                    items(usersSearchList!!) {
-                        UserSearchInfo(it, navhost)
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun SearchScreenVertical(
-    searchLogin: String,
-    setSearchLogin: (s: String) -> Unit,
-    usersSearchList: List<UserSearchModel>?,
-    searchUsers: () -> Unit,
-    navhost: NavHostController,
-    error: Boolean,
-    setError: (b: Boolean) -> Unit
-) {
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp)
-    ) {
-        SearchBar(
-            searchLogin,
-            onChangeValue = { v -> if (v.length < 25) setSearchLogin(v.filter { it.isLetter() }) },
-            searchUsers = searchUsers,
-        )
-
-        if (error) {
-            showAlert(
-                title = "Error",
-                message = "User not found",
-                error,
-                setError
-            )
-        } else {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                contentPadding = PaddingValues(5.dp),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 20.dp)
-            ) {
-                if ((usersSearchList?.isEmpty() == false)) {
-                    items(usersSearchList!!) {
-                        UserSearchInfo(it, navhost)
-                    }
-                }
-            }
-        }
-    }
-}
-
-
 @Composable
 fun SearchScreen(
-    searchLogin: String,
+    viewModel: AppNavigationViewModel,
     setSearchLogin: (s: String) -> Unit,
     usersSearchList: List<UserSearchModel>?,
     searchUsers: () -> Unit,
     navhost: NavHostController,
-    auth: Auth,
     error: Boolean,
     setError: (b: Boolean) -> Unit
 ) {
 
-    val viewModel = SearchScreenViewModel()
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp)
+    ) {
+        SearchBar(
+            viewModel.searchLogin.value,
+            onChangeValue = { v -> if (v.length < 25) setSearchLogin(v.filter { it.isLetter() }) },
+            searchUsers = searchUsers,
+        )
 
-    viewModel.access_token = remember { mutableStateOf<String?>(null) }
-
-    LaunchedEffect(true) {
-        withContext(Dispatchers.IO) {
-            viewModel.access_token.value = auth.httpRequest()
-            println("token => ${viewModel.access_token.value}")
+        if (error) {
+            showAlert(
+                title = "Error",
+                message = "User not found",
+                error,
+                setError
+            )
+        } else {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                contentPadding = PaddingValues(5.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 20.dp)
+            ) {
+                if ((usersSearchList?.isEmpty() == false)) {
+                    items(usersSearchList!!) {
+                        UserSearchInfo(it, navhost, viewModel)
+                    }
+                }
+            }
         }
     }
-
-    println("usersSearchLIst => $usersSearchList")
-
-    if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-        SearchScreenHorizontal(
-            searchLogin = searchLogin,
-            setSearchLogin = setSearchLogin,
-            usersSearchList = usersSearchList,
-            searchUsers = searchUsers,
-            navhost = navhost,
-            error = error,
-            setError = setError
-        )
-    }
-    else {
-        SearchScreenVertical(
-            searchLogin = searchLogin,
-            setSearchLogin = setSearchLogin,
-            usersSearchList = usersSearchList,
-            searchUsers = searchUsers,
-            navhost = navhost,
-            error = error,
-            setError = setError
-        )
-    }
-
 }

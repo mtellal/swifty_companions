@@ -14,6 +14,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,15 +64,22 @@ fun AppNavigation(
 
     val navhost = rememberNavController()
 
+    LaunchedEffect(true) {
+        withContext(Dispatchers.IO) {
+            println("Fetching access tokne ...")
+            viewModel.auth.value.fetchAccessToken()
+            println("Access token fetched")
+        }
+    }
+
     NavHost(navController = navhost, startDestination = "searchScreen") {
         composable("searchScreen") {
             SearchScreen(
-                viewModel.searchLogin.value,
+                viewModel,
                 setSearchLogin = { viewModel.setSearchLogin(it) },
                 usersSearchList = viewModel.usersSearchList.value,
                 searchUsers = { viewModel.searchUsers() },
                 navhost,
-                viewModel.auth.value,
                 viewModel.error.value,
                 setError = { v -> viewModel.error.value = v }
             )

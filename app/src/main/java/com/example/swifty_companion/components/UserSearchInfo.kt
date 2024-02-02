@@ -28,10 +28,15 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.swifty_companion.components.ProfilePicture
 import com.example.swifty_companion.models.UserSearchModel
+import com.example.swifty_companion.viewModels.AppNavigationViewModel
 import com.google.gson.Gson
 
 @Composable
-fun UserSearchInfo(user: UserSearchModel, navhost: NavHostController) {
+fun UserSearchInfo(
+    user: UserSearchModel,
+    navhost: NavHostController,
+    viewModel: AppNavigationViewModel
+) {
     Row(verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
@@ -40,6 +45,7 @@ fun UserSearchInfo(user: UserSearchModel, navhost: NavHostController) {
             .background(Color.White)
             .padding(10.dp)
             .clickable {
+
                 navhost.navigate("userScreen/${user.id}")
             }) {
         ProfilePicture(user.image.versions.small)

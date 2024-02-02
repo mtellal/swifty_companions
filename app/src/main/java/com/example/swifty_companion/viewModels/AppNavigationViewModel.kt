@@ -25,6 +25,8 @@ class AppNavigationViewModel : ViewModel() {
     var usersSearchList: MutableState<List<UserSearchModel>?> = mutableStateOf(listOf())
     var error: MutableState<Boolean> = mutableStateOf(false)
 
+    var currentUser: MutableState<UserSearchModel>? = null
+
     fun setSearchLogin(value: String) {
         previousSearchLogin.value = searchLogin.value;
         searchLogin.value = value;

@@ -33,102 +33,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SearchBarLandscape(
-    textField: String,
-    onChangeValue: (s: String) -> Unit,
-    submit: (t: String) -> Unit
-) {
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxHeight(0.2f)
-            .fillMaxWidth()
-    ) {
-        OutlinedTextField(
-            label = {
-                Text(text = "Find a peer")
-            },
-            modifier = Modifier
-                .fillMaxWidth(0.7f),
-            value = textField,
-            singleLine = true,
-            onValueChange = onChangeValue,
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Email Icon"
-                )
-            },
-            keyboardActions = KeyboardActions(
-                onDone = { submit(textField) }
-            )
-        )
-        Spacer(modifier = Modifier.width(10.dp))
-        OutlinedButton(
-            modifier = Modifier
-                .padding(top = 5.dp),
-            shape = RoundedCornerShape(5.dp),
-            colors = ButtonDefaults.buttonColors(Color.White),
-            onClick = { submit(textField) }
-        ) {
-            Text(text = "Search", color = Color.Black)
-        }
-    }
-}
-
-@Composable
-fun SearchBarPortait(
-    textField: String,
-    onChangeValue: (s: String) -> Unit,
-    submit: (t: String) -> Unit
-) {
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxHeight(0.1f)
-            .fillMaxWidth()
-    ) {
-        OutlinedTextField(
-            label = {
-                Text(text = "Find a peer")
-            },
-            modifier = Modifier
-                .fillMaxWidth(0.7f),
-            value = textField,
-            singleLine = true,
-            onValueChange = onChangeValue,
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Email Icon"
-                )
-            },
-            keyboardActions = KeyboardActions(
-                onDone = { submit(textField) }
-            )
-        )
-        Spacer(modifier = Modifier.width(10.dp))
-        OutlinedButton(
-            modifier = Modifier
-                .padding(top = 5.dp),
-            shape = RoundedCornerShape(5.dp),
-            colors = ButtonDefaults.buttonColors(Color.White),
-            onClick = { submit(textField) }
-        ) {
-            Text(text = "Search", color = Color.Black)
-        }
-    }
-}
-
-
-@Composable
 fun SearchBar(
     textField: String,
     onChangeValue: (s: String) -> Unit,
     searchUsers: () -> Unit,
 ) {
+    val orientationLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
     val localFocus = LocalFocusManager.current;
 
     fun submit(text: String): Unit {
@@ -138,19 +48,41 @@ fun SearchBar(
         }
     }
 
-    if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-        SearchBarLandscape(
-            textField = textField,
-            onChangeValue = onChangeValue,
-            submit = { t -> submit(t) },
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxHeight(if (orientationLandscape) 0.2f else 0.1f)
+            .fillMaxWidth()
+    ) {
+        OutlinedTextField(
+            label = {
+                Text(text = "Find a peer")
+            },
+            modifier = Modifier
+                .fillMaxWidth(0.7f),
+            value = textField,
+            singleLine = true,
+            onValueChange = onChangeValue,
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Email Icon"
+                )
+            },
+            keyboardActions = KeyboardActions(
+                onDone = { submit(textField) }
+            )
         )
-    } else {
-        SearchBarPortait(
-            textField = textField,
-            onChangeValue = onChangeValue,
-            submit = { t -> submit(t) },
-        )
+        Spacer(modifier = Modifier.width(10.dp))
+        OutlinedButton(
+            modifier = Modifier
+                .padding(top = 5.dp),
+            shape = RoundedCornerShape(5.dp),
+            colors = ButtonDefaults.buttonColors(Color.White),
+            onClick = { submit(textField) }
+        ) {
+            Text(text = "Search", color = Color.Black)
+        }
     }
-
 
 }

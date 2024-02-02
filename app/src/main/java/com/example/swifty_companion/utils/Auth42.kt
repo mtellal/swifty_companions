@@ -28,7 +28,7 @@ class Auth {
     var token: TokenResponse? = null
     private val client = OkHttpClient()
 
-    suspend fun httpRequest(): String? {
+    suspend fun fetchAccessToken(): String? {
 
         val formBody = FormBody.Builder()
             .add("grant_type", grant_type)
@@ -126,32 +126,4 @@ class Auth {
         return coalition
     }
 
-    fun <A>fetchData(uri: String?): A? {
-        var url: String = "https://api.intra.42.fr/v2${uri}"
-        var data: A? = null
-        if (uri == null) return null
-        try {
-            val request = Request.Builder()
-                .url(url)
-                .header("Authorization", "Bearer ${token?.access_token}")
-                .build()
-
-            client.newCall(request).execute().use {
-                if (!it.isSuccessful) throw IOException("${uri} call failed")
-                val itemType = object : TypeToken<A?>() {}.type
-                data = Gson().fromJson(it.body!!.string(), itemType)
-            }
-        } catch (e: IOException) {
-            println("FetchData data call failed with =>")
-            println("$e")
-        }
-        catch (e: JsonParseException) {
-            println("FetchData JsonParseException thrown $e")
-        }
-        catch (e: Exception) {
-            println("FetchData Exception thrown $e")
-        }
-        println("return data correctly $data")
-        return data
-    }
 }
