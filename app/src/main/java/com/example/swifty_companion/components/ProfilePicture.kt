@@ -9,6 +9,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -37,13 +38,15 @@ fun ProfilePicture(
             AsyncImage(
                 model = url,
                 contentDescription = null,
-                modifier = Modifier.height(50.dp).fillMaxWidth()
+                modifier = Modifier.height(50.dp).fillMaxWidth(),
+                contentScale = ContentScale.Crop
             )
         } else {
             Image(
                 painter = painterResource(id = R.drawable.defaultuser),
                 contentDescription = "default profile picture",
-                modifier = Modifier.height(50.dp)
+                modifier = Modifier.height(50.dp),
+                contentScale = ContentScale.Crop
             )
         }
     }

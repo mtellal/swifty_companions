@@ -28,7 +28,7 @@ class Auth {
     var token: TokenResponse? = null
     private val client = OkHttpClient()
 
-    suspend fun fetchAccessToken(): String? {
+     fun fetchAccessToken(): String? {
 
         val formBody = FormBody.Builder()
             .add("grant_type", grant_type)
@@ -45,17 +45,20 @@ class Auth {
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) throw IOException("Unexpected error $response")
                 this.token = Gson().fromJson(response.body!!.string(), TokenResponse::class.java)
-                println("token from httpRequest ${this.token}")
+                println("token => $token")
             }
-        } catch (e: Exception) {
-//            println("Error: oauthToken request $e")
-            println("return null")
-            return (null)
+        }
+        catch (e: IOException) {
+            println("Error (IO): fetchAccessToken request => $e")
+        }
+        catch (e: Exception) {
+            println("Error: fetchAccessToken request => $e")
         }
         return token?.access_token
     }
 
-    suspend fun findPeerRequest(login: String?): List<UserSearchModel>? {
+    fun findPeerRequest(login: String?): List<UserSearchModel>? {
+        if (login == null) return (null)
         var users: List<UserSearchModel>? = null
         var url: String = "https://api.intra.42.fr/v2/users"
         if (login != null)
@@ -72,12 +75,16 @@ class Auth {
             }
         }
         catch (e: IOException) {
-            println("Error findPeerRequest IOexceptiom $e")
+            println("Error (IO): findPeerRequest request => $e")
+        }
+        catch (e: Exception) {
+            println("Error: findPeerRequest request => $e")
         }
         return users
     }
 
-    suspend fun userDataRequest(userId: Int?): UserDataModel? {
+    fun userDataRequest(userId: Int?): UserDataModel? {
+        if (userId == null) return (null)
         var url: String = "https://api.intra.42.fr/v2/users/$userId"
         var user: UserDataModel? = null
         if (userId == null) println("Invalid userId")
@@ -92,17 +99,21 @@ class Auth {
                 val itemType = object : TypeToken<UserDataModel>() {}.type
                 user = Gson().fromJson(it.body!!.string(), itemType)
             }
-        } catch (e: IOException) {
-            println("User $userId data call failed with =>")
-            println("$e")
-            return (null)
+        }
+        catch (e: IOException) {
+            println("Error (IO): userDataRequest request => $e")
+        }
+        catch (e: Exception) {
+            println("Error: userDataRequest request => $e")
         }
         return user
     }
 
     fun userCoalition(username: String?): Array<CoalitionModel>? {
+        if (username == null) return (null)
         var url: String = "https://api.intra.42.fr/v2/users/${username}/coalitions"
         var coalition: Array<CoalitionModel>? = null
+        println("$url $username")
         try {
             val request = Request.Builder()
                 .url(url)
@@ -114,14 +125,12 @@ class Auth {
                 val itemType = object : TypeToken<Array<CoalitionModel>?>() {}.type
                 coalition = Gson().fromJson(it.body!!.string(), itemType)
             }
-        } catch (e: IOException) {
-            println("Coalition $username data call failed with => $e")
         }
-        catch (e: JsonParseException) {
-            println("JsonParseException thrown $e")
+        catch (e: IOException) {
+            println("Error (IO): userCoalition request => $e")
         }
         catch (e: Exception) {
-            println("Exception thrown $e")
+            println("Error: userCoalition request => $e")
         }
         return coalition
     }

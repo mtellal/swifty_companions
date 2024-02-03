@@ -35,7 +35,6 @@ import com.google.gson.Gson
 fun UserSearchInfo(
     user: UserSearchModel,
     navhost: NavHostController,
-    viewModel: AppNavigationViewModel
 ) {
     Row(verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -45,7 +44,6 @@ fun UserSearchInfo(
             .background(Color.White)
             .padding(10.dp)
             .clickable {
-
                 navhost.navigate("userScreen/${user.id}")
             }) {
         ProfilePicture(user.image.versions.small)

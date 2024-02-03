@@ -16,40 +16,27 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavViewModelStoreProvider
 import com.example.swifty_companion.components.Header
 import com.example.swifty_companion.components.Projects
 import com.example.swifty_companion.components.Skills
 import com.example.swifty_companion.models.CoalitionModel
 import com.example.swifty_companion.models.UserDataModel
 import com.example.swifty_companion.utils.Auth
+import com.example.swifty_companion.viewModels.AppNavigationViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
 fun UserScreen(
     navHostController: NavHostController,
-    auth: Auth,
     userId: Int?,
+    viewModel: AppNavigationViewModel
 ) {
     val scrollState = rememberScrollState()
-    var user by remember { mutableStateOf<UserDataModel?>(null) }
-    var coalition by remember { mutableStateOf<Array<CoalitionModel>?>(null) }
 
     LaunchedEffect(true) {
-        withContext(Dispatchers.IO) {
-            user = auth.userDataRequest(userId)
-            println("USER => $user")
-            if (user != null && user!!.login != null) {
-                println("before coalition")
-                coalition = auth.userCoalition(user!!.login)
-                if (coalition != null && coalition!!.size > 0) {
-                    println("COALITION SIZE ${coalition?.size}")
-                    for (i in coalition!!) {
-                        println(i)
-                    }
-                }
-            }
-        }
+        viewModel.loadUserData(userId)
     }
 
     Column(
@@ -58,13 +45,18 @@ fun UserScreen(
             .verticalScroll(scrollState)
     )
     {
-        Header(navHostController, user, coalition)
+        Header(
+            navHostController,
+            viewModel.currentUser.value,
+            viewModel.coalition.value,
+            viewModel.coalitionColor
+        )
         Column(
             modifier = Modifier.padding(20.dp)
         ) {
-            Projects(user)
+            Projects(viewModel.currentUser.value)
             Spacer(modifier = Modifier.height(20.dp))
-            Skills(user = user)
+            Skills(user = viewModel.currentUser.value)
         }
     }
 }

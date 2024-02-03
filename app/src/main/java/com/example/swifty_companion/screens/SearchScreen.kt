@@ -82,7 +82,7 @@ fun SearchScreen(
     setSearchLogin: (s: String) -> Unit,
     usersSearchList: List<UserSearchModel>?,
     searchUsers: () -> Unit,
-    navhost: NavHostController,
+    _navhost: NavHostController,
     error: Boolean,
     setError: (b: Boolean) -> Unit
 ) {
@@ -116,7 +116,7 @@ fun SearchScreen(
             ) {
                 if ((usersSearchList?.isEmpty() == false)) {
                     items(usersSearchList!!) {
-                        UserSearchInfo(it, navhost, viewModel)
+                        UserSearchInfo(it, _navhost)
                     }
                 }
             }

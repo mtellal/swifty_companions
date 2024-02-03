@@ -65,11 +65,7 @@ fun AppNavigation(
     val navhost = rememberNavController()
 
     LaunchedEffect(true) {
-        withContext(Dispatchers.IO) {
-            println("Fetching access tokne ...")
-            viewModel.auth.value.fetchAccessToken()
-            println("Access token fetched")
-        }
+        viewModel.fetchAccessToken();
     }
 
     NavHost(navController = navhost, startDestination = "searchScreen") {
@@ -79,7 +75,7 @@ fun AppNavigation(
                 setSearchLogin = { viewModel.setSearchLogin(it) },
                 usersSearchList = viewModel.usersSearchList.value,
                 searchUsers = { viewModel.searchUsers() },
-                navhost,
+                _navhost = navhost,
                 viewModel.error.value,
                 setError = { v -> viewModel.error.value = v }
             )
@@ -95,8 +91,8 @@ fun AppNavigation(
         ) {
             UserScreen(
                 navHostController = navhost,
-                viewModel.auth.value,
-                userId = it.arguments?.getInt("userId")
+                userId = it.arguments?.getInt("userId"),
+                viewModel
             )
         }
     }
