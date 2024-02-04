@@ -1,10 +1,10 @@
 package com.example.swifty_companion.models
 
 data class CoalitionModel(
-    val id: String? = null,
-    val slug: String? = null,
-    val name: String? = null,
-    val cover_url:  String? = null,
-    val image_url: String? = null,
-    val color: String? = null
+    var id: String? = null,
+    var slug: String? = null,
+    var name: String? = null,
+    var cover_url:  String? = null,
+    var image_url: String? = null,
+    var color: String? = null
 )

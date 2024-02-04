@@ -46,13 +46,13 @@ class AppNavigationViewModel : ViewModel() {
         }
     }
 
-
     fun loadUserData(userId: Int?) {
         if (currentUser.value == null || currentUser.value!!.id != userId) {
             viewModelScope.launch {
                 withContext(Dispatchers.IO) {
                     println("Loading user data ...")
                     currentUser.value = auth.value.userDataRequest(userId)
+                    coalitionColor = Color.White
                     if (currentUser.value != null && currentUser.value!!.login != null) {
                         println("loading coalition ...")
                         initCoalition(auth.value.userCoalition(currentUser.value!!.login))
@@ -75,8 +75,8 @@ class AppNavigationViewModel : ViewModel() {
             viewModelScope.launch {
                 withContext(Dispatchers.IO) {
                     println("Searching users ...")
-                    usersSearchList!!.value = auth.value.findPeerRequest(searchLogin.value)
-                    if (usersSearchList == null || usersSearchList.value!!.isEmpty()) {
+                    usersSearchList.value = auth.value.findPeerRequest(searchLogin.value)
+                    if (usersSearchList.value == null || usersSearchList.value!!.isEmpty()) {
                         error.value = true;
                     } else
                         error.value = false
@@ -92,6 +92,7 @@ class AppNavigationViewModel : ViewModel() {
                 withContext(Dispatchers.IO) {
                     println("Fetching access token")
                     auth.value.fetchAccessToken()
+                    println("ACCESS TOKEN => ${auth.value.token}")
                     println("Access token fetched !")
                 }
             }

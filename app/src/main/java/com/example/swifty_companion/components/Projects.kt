@@ -66,7 +66,7 @@ fun Project(
                         .width(25.dp)
                 )
             }
-            else if (project.status == "finished" && project.validated != null && project.validated) {
+            else if (project.status == "finished" && project.validated != null && project.validated!!) {
                 Text(text = project.final_mark.toString(), color = Colors.green_primary)
                 Spacer(modifier = Modifier.width(10.dp))
                 Icon(
@@ -97,8 +97,8 @@ fun Projects(user: UserDataModel?) {
         mutableStateOf<List<ProjectData>?>(null)
     }
 
-    if (user != null && user.projects_users.isNotEmpty()) {
-            projects = user.projects_users.slice(IntRange(0, user.projects_users.size - 1))
+    if (user != null && user.projects_users != null && user.projects_users!!.isNotEmpty()) {
+            projects = user.projects_users!!.slice(IntRange(0, user.projects_users!!.size - 1))
     }
 
     Column {

@@ -37,6 +37,6 @@ data class UserDataModel(
     val image: UserImage,
     val correction_point: Int,
     val wallet: Int,
-    val cursus_users: Array<UserCursus>,
-    val projects_users: Array<ProjectData>
+    val cursus_users: Array<UserCursus>?,
+    val projects_users: Array<ProjectData>?
 )
