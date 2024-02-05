@@ -3,7 +3,9 @@ package com.example.swifty_companion.viewModels
 import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
+import android.net.Network
 import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,12 +27,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.net.UnknownHostException
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 
 class AppNavigationViewModel(application: Application) :
     AndroidViewModel(application = application) {
-
     var auth: MutableState<Auth> = mutableStateOf(Auth())
     var searchLogin: MutableState<String> = mutableStateOf("")
     var previousSearchLogin: MutableState<String> = mutableStateOf("")
@@ -51,7 +54,7 @@ class AppNavigationViewModel(application: Application) :
     }
 
 
-    fun initCoalition(c: Array<CoalitionModel>?) {
+    private fun initCoalition(c: Array<CoalitionModel>?) {
         if (c != null && c.size > 0) {
             if (c.size > 2)
                 coalition.value = c[1]
@@ -68,9 +71,13 @@ class AppNavigationViewModel(application: Application) :
         if (currentUser.value == null || currentUser.value!!.id != userId) {
             viewModelScope.launch {
                 withContext(Dispatchers.IO) {
+                    if (auth.value.token == null) {
+                        println("fetching access token ...")
+                        auth.value.fetchAccessToken()
+                        println("access token fetched !")
+                    }
                     println("Loading user data ...")
                     if (!isConnected()) {
-                        navHost.value.navigate("searchScreen")
                         error.value = "Internet Network not found"
                     } else {
                         currentUser.value = auth.value.userDataRequest(userId)
@@ -98,17 +105,26 @@ class AppNavigationViewModel(application: Application) :
             previousSearchLogin.value = searchLogin.value;
             viewModelScope.launch {
                 withContext(Dispatchers.IO) {
+                    if (auth.value.token == null) {
+                        println("fetching access token ...")
+                        auth.value.fetchAccessToken()
+                        println("access token fetched !")
+                    }
                     println("Searching users ...")
-                    if (!isConnected()) {
-                        error.value = "Internet Network not found"
-                    } else {
+                    try {
                         usersSearchList.value = auth.value.findPeerRequest(searchLogin.value)
                         if (usersSearchList.value == null || usersSearchList.value!!.isEmpty()) {
                             error.value = "Users no found";
                         } else
                             error.value = null
-                        println("Users searched loaded !")
+                    } catch (e: UnknownHostException) {
+                        println("Error (host): searchUsers request => $e")
+                        error.value = "Internet network not found"
+                    } catch (e: Exception) {
+                        println("Error: searchUsers request => $e")
+                        error.value = "Users not found"
                     }
+                    println("Users searched loaded !")
                 }
             }
         }

@@ -26,7 +26,12 @@ fun UserScreen(
     val scrollState = rememberScrollState()
 
     LaunchedEffect(true) {
-        viewModel.loadUserData(userId)
+        if (viewModel.isConnected()) {
+            viewModel.loadUserData(userId)
+        }
+        else {
+            navHostController.navigate("searchScreen")
+        }
     }
 
     Column(

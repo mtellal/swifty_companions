@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -35,18 +36,21 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation(
     viewModel: AppNavigationViewModel
 ) {
+
+    val navHost = rememberNavController()
+
     LaunchedEffect(true) {
         viewModel.fetchAccessToken();
     }
 
-    NavHost(navController = viewModel.navHost.value, startDestination = "searchScreen") {
+    NavHost(navController = navHost, startDestination = "searchScreen") {
         composable("searchScreen") {
             SearchScreen(
                 viewModel,
                 setSearchLogin = { viewModel.setSearchLogin(it) },
                 usersSearchList = viewModel.usersSearchList.value,
                 searchUsers = { viewModel.searchUsers() },
-                _navhost = viewModel.navHost.value,
+                _navhost = navHost,
                 viewModel.error.value,
                 setError = { v -> viewModel.error.value = v }
             )
@@ -61,7 +65,7 @@ fun AppNavigation(
             )
         ) {
             UserScreen(
-                navHostController = viewModel.navHost.value,
+                navHostController = navHost,
                 userId = it.arguments?.getInt("userId"),
                 viewModel
             )

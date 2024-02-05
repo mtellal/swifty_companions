@@ -28,7 +28,7 @@ class Auth {
     var token: TokenResponse? = null
     private val client = OkHttpClient()
 
-     fun fetchAccessToken(): String? {
+    fun fetchAccessToken(): String? {
 
         val formBody = FormBody.Builder()
             .add("grant_type", grant_type)
@@ -47,11 +47,9 @@ class Auth {
                 this.token = Gson().fromJson(response.body!!.string(), TokenResponse::class.java)
                 println("token => $token")
             }
-        }
-        catch (e: IOException) {
+        } catch (e: IOException) {
             println("Error (IO): fetchAccessToken request => $e")
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             println("Error: fetchAccessToken request => $e")
         }
         return token?.access_token
@@ -63,24 +61,17 @@ class Auth {
         var url: String = "https://api.intra.42.fr/v2/users"
         if (login != null)
             url += "?range[login]=" + login.lowercase() + "," + login.lowercase() + "z"
-        try {
-            val request = Request.Builder()
-                .url(url)
-                .header("Authorization", "Bearer ${token?.access_token}")
-                .build()
-            client.newCall(request).execute().use {
-                if (!it.isSuccessful) throw IOException("Unexpected error $it")
-                val itemType = object : TypeToken<List<UserSearchModel>>() {}.type
-                users = Gson().fromJson<List<UserSearchModel>>(it.body!!.string(), itemType)
-            }
+        val request = Request.Builder()
+            .url(url)
+            .header("Authorization", "Bearer ${token?.access_token}")
+            .build()
+        client.newCall(request).execute().use {
+            if (!it.isSuccessful) throw IOException("Unexpected error $it")
+            val itemType = object : TypeToken<List<UserSearchModel>>() {}.type
+            users = Gson().fromJson<List<UserSearchModel>>(it.body!!.string(), itemType)
+
+            return users
         }
-        catch (e: IOException) {
-            println("Error (IO): findPeerRequest request => $e")
-        }
-        catch (e: Exception) {
-            println("Error: findPeerRequest request => $e")
-        }
-        return users
     }
 
     fun userDataRequest(userId: Int?): UserDataModel? {
@@ -99,11 +90,9 @@ class Auth {
                 val itemType = object : TypeToken<UserDataModel>() {}.type
                 user = Gson().fromJson(it.body!!.string(), itemType)
             }
-        }
-        catch (e: IOException) {
+        } catch (e: IOException) {
             println("Error (IO): userDataRequest request => $e")
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             println("Error: userDataRequest request => $e")
         }
         return user
@@ -125,11 +114,9 @@ class Auth {
                 val itemType = object : TypeToken<Array<CoalitionModel>?>() {}.type
                 coalition = Gson().fromJson(it.body!!.string(), itemType)
             }
-        }
-        catch (e: IOException) {
+        } catch (e: IOException) {
             println("Error (IO): userCoalition request => $e")
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             println("Error: userCoalition request => $e")
         }
         return coalition

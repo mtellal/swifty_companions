@@ -33,6 +33,7 @@ import com.google.gson.Gson
 
 @Composable
 fun UserSearchInfo(
+    viewModel: AppNavigationViewModel,
     user: UserSearchModel,
     navhost: NavHostController,
 ) {
@@ -44,7 +45,10 @@ fun UserSearchInfo(
             .background(Color.White)
             .padding(10.dp)
             .clickable {
-                navhost.navigate("userScreen/${user.id}")
+                if (viewModel.isConnected())
+                    navhost.navigate("userScreen/${user.id}")
+                else
+                    viewModel.error.value = "Internet network not found"
             }) {
         ProfilePicture(user.image.versions.small)
         Text(

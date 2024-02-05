@@ -90,7 +90,7 @@ fun SearchScreen(
             ) {
                 if ((usersSearchList?.isEmpty() == false)) {
                     items(usersSearchList!!) {
-                        UserSearchInfo(it, _navhost)
+                        UserSearchInfo(viewModel, it, _navhost)
                     }
                 }
             }
