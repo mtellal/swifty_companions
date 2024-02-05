@@ -1,9 +1,9 @@
 import java.io.FileInputStream
 import java.util.Properties
 
-var localPropertiesFile = rootProject.file("local.properties")
-var localProperties = Properties()
-localProperties.load(FileInputStream(localPropertiesFile))
+var envFile = rootProject.file(".env")
+var env = Properties()
+env.load(FileInputStream(envFile))
 
 plugins {
     id("com.android.application")
@@ -21,8 +21,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        buildConfigField("String", "CLIENT_UID", localProperties.getProperty("client_uid") )
-        buildConfigField("String", "CLIENT_SECRET", localProperties.getProperty("client_secret"))
+        buildConfigField("String", "CLIENT_UID", env.getProperty("client_uid") )
+        buildConfigField("String", "CLIENT_SECRET", env.getProperty("client_secret"))
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
