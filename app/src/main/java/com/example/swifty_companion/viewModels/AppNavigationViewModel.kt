@@ -44,6 +44,8 @@ class AppNavigationViewModel(application: Application) :
     var coalition: MutableState<CoalitionModel?> = mutableStateOf<CoalitionModel?>(null)
     var coalitionColor: Color = Color.White;
 
+    var isLoadingSearchUsers: MutableState<Boolean> = mutableStateOf(false)
+    var isLoadingUserDatas: MutableState<Boolean> = mutableStateOf(false)
 
     fun isConnected(): Boolean {
         val connectivityManager =
@@ -52,7 +54,6 @@ class AppNavigationViewModel(application: Application) :
         val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
         return (networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true)
     }
-
 
     private fun initCoalition(c: Array<CoalitionModel>?) {
         if (c != null && c.size > 0) {
@@ -71,12 +72,13 @@ class AppNavigationViewModel(application: Application) :
         if (currentUser.value == null || currentUser.value!!.id != userId) {
             viewModelScope.launch {
                 withContext(Dispatchers.IO) {
+                    println("Loading user data ...")
+                    isLoadingUserDatas.value = true;
                     if (auth.value.token == null) {
                         println("fetching access token ...")
                         auth.value.fetchAccessToken()
                         println("access token fetched !")
                     }
-                    println("Loading user data ...")
                     if (!isConnected()) {
                         error.value = "Internet Network not found"
                     } else {
@@ -89,11 +91,11 @@ class AppNavigationViewModel(application: Application) :
                         }
                         println("User data loaded !")
                     }
+                    isLoadingUserDatas.value = false;
                 }
             }
         }
     }
-
 
     fun setSearchLogin(value: String) {
         previousSearchLogin.value = searchLogin.value;
@@ -105,16 +107,17 @@ class AppNavigationViewModel(application: Application) :
             previousSearchLogin.value = searchLogin.value;
             viewModelScope.launch {
                 withContext(Dispatchers.IO) {
+                    println("Searching users ...")
+                    isLoadingSearchUsers.value = true;
                     if (auth.value.token == null) {
                         println("fetching access token ...")
                         auth.value.fetchAccessToken()
                         println("access token fetched !")
                     }
-                    println("Searching users ...")
                     try {
                         usersSearchList.value = auth.value.findPeerRequest(searchLogin.value)
                         if (usersSearchList.value == null || usersSearchList.value!!.isEmpty()) {
-                            error.value = "Users no found";
+                            error.value = "Users not found";
                         } else
                             error.value = null
                     } catch (e: UnknownHostException) {
@@ -125,6 +128,7 @@ class AppNavigationViewModel(application: Application) :
                         error.value = "Users not found"
                     }
                     println("Users searched loaded !")
+                    isLoadingSearchUsers.value = false;
                 }
             }
         }
@@ -136,12 +140,11 @@ class AppNavigationViewModel(application: Application) :
                 withContext(Dispatchers.IO) {
                     println("Fetching access token")
                     auth.value.fetchAccessToken()
-                    println("ACCESS TOKEN => ${auth.value.token}")
+//                    println("ACCESS TOKEN => ${auth.value.token}")
                     println("Access token fetched !")
                 }
             }
         }
     }
-
 
 }

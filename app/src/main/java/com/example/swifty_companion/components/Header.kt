@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -44,12 +45,14 @@ fun UserLevelBar(
     user: UserDataModel?,
     color: Color
 ) {
-    var level : String? = null
+    var level: String? = null
     var percent: String? = null
     var percentFloat: Float = 0f
     if (user != null && user.cursus_users != null && user.cursus_users!!.size > 1) {
         level = user.cursus_users!![1].level.toInt().toString()
-        percent = ((user.cursus_users!![1].level - user.cursus_users!![1].level.toInt()) * 100).toInt().toString()
+        percent =
+            ((user.cursus_users!![1].level - user.cursus_users!![1].level.toInt()) * 100).toInt()
+                .toString()
         percentFloat = percent.toFloat() / 100
     }
 
@@ -113,8 +116,7 @@ fun Header(
                     .height(250.dp),
                 contentScale = ContentScale.Crop
             )
-        }
-        else {
+        } else {
             Image(
                 painter = painterResource(id = R.drawable.alliance_background),
                 contentDescription = "Colation image",
@@ -141,11 +143,12 @@ fun Header(
                 .padding(30.dp)
         )
         {
-            Box(
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 10.dp),
-                contentAlignment = Alignment.CenterEnd
             ) {
                 Text(
                     text = user?.first_name + " " + user?.last_name,
@@ -153,6 +156,15 @@ fun Header(
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(end = 20.dp)
+                )
+                Text(
+                    text = user?.email + "",
+                    color = Color.White,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(end = 20.dp)
+                        .alpha(0.9f)
                 )
             }
             Surface(
@@ -199,7 +211,7 @@ fun Header(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxHeight()
                     ) {
-                        Text(text = "Grade", color =coalitionColor)
+                        Text(text = "Grade", color = coalitionColor)
                         Text(
                             text = if (user != null && user.cursus_users != null && user.cursus_users!!.size > 1 && user.cursus_users!![1].grade != null) user.cursus_users!![1].grade else "",
                             color = Color.White
@@ -207,7 +219,8 @@ fun Header(
                     }
                 }
             }
-            UserLevelBar(user = user,  color = coalitionColor)
+            UserLevelBar(user = user, color = coalitionColor)
+
         }
     }
 }

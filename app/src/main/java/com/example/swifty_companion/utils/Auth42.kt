@@ -102,7 +102,6 @@ class Auth {
         if (username == null) return (null)
         var url: String = "https://api.intra.42.fr/v2/users/${username}/coalitions"
         var coalition: Array<CoalitionModel>? = null
-        println("$url $username")
         try {
             val request = Request.Builder()
                 .url(url)
