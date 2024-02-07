@@ -56,7 +56,7 @@ fun Project(
     ) {
         Text(text = project.project.name, fontSize = 15.sp)
         Row {
-            if (project.status == "in_progress") {
+            if (project.status == "in_progress" || project.status == "searching_a_group") {
                 Icon(
                     painter = painterResource(id = R.drawable.time),
                     contentDescription = "check mark",

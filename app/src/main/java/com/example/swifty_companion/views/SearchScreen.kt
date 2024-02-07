@@ -73,7 +73,7 @@ fun SearchScreen(
     ) {
         SearchBar(
             viewModel.searchLogin.value,
-            onChangeValue = { v -> if (v.length < 25) setSearchLogin(v.filter { it.isLetter() }) },
+            onChangeValue = { v -> if (v.length < 25) setSearchLogin(v.filter { it.isLetter() || it == '-' }) },
             searchUsers = searchUsers,
         )
 
